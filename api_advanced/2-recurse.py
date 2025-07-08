@@ -1,5 +1,13 @@
 #!/usr/bin/python3
-"""Recursive function to get all hot post titles from a subreddit."""
+"""
+Reddit API: Recursively retrieve all hot article titles for a given subreddit.
+
+This script defines a function `recurse` that connects to the Reddit API
+without authentication and collects all titles of hot posts from a specified
+subreddit. It uses recursion and handles pagination via the `after` parameter.
+
+If the subreddit is invalid or there are no results, the function returns None.
+"""
 
 import requests
 
@@ -7,7 +15,14 @@ import requests
 def recurse(subreddit, hot_list=[], after=None):
     """
     Recursively returns a list of titles of all hot articles for a subreddit.
-    If the subreddit is invalid or no results found, returns None.
+    
+    Args:
+        subreddit (str): The name of the subreddit to query.
+        hot_list (list): The list used to store retrieved titles.
+        after (str): The pagination token for the next page (from Reddit API).
+    
+    Returns:
+        list: List of post titles, or None if subreddit is invalid or empty.
     """
     if not isinstance(subreddit, str) or subreddit == "":
         return None

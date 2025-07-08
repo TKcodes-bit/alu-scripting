@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-Fetches and prints the titles of the first 10 hot posts
-of a given subreddit using the Reddit API.
+Reddit API: Prints the titles of the first 10 hot posts of a subreddit.
 """
 
 import requests
@@ -10,12 +9,11 @@ import requests
 def top_ten(subreddit):
     """
     Prints the titles of the top 10 hot posts for a given subreddit.
-    If the subreddit is invalid, prints None.
 
     Args:
-        subreddit (str): The name of the subreddit to query.
+        subreddit (str): The subreddit name to query.
     """
-    if not isinstance(subreddit, str) or not subreddit:
+    if not isinstance(subreddit, str):
         print("None")
         return
 
@@ -35,10 +33,16 @@ def top_ten(subreddit):
             print("None")
             return
 
-        posts = response.json().get("data", {}).get("children", [])
+        data = response.json().get("data")
+        if not data:
+            print("None")
+            return
 
+        posts = data.get("children", [])
         for post in posts:
-            print(post.get("data", {}).get("title"))
+            title = post.get("data", {}).get("title")
+            if title:
+                print(title)
 
     except Exception:
         print("None")

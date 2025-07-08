@@ -12,10 +12,11 @@ def top_ten(subreddit):
         subreddit (str): The subreddit name to query.
     """
     if not isinstance(subreddit, str) or not subreddit:
+        print("None")
         return
 
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {"User-Agent": "HolbertonSchool"}
+    headers = {"User-Agent": "python:subreddit.posts:v1.0 (by /u/username)"}
     params = {"limit": 10}
 
     try:
@@ -27,19 +28,22 @@ def top_ten(subreddit):
         )
 
         if response.status_code != 200:
+            print("None")
             return
 
-        data = response.json().get("data")
-        if not data:
+        data = response.json()
+        if not data or "data" not in data:
+            print("None")
             return
 
-        posts = data.get("children", [])
+        posts = data["data"]["children"]
+        if not posts:
+            print("None")
+            return
 
         for post in posts:
-            post_data = post.get("data", {})
-            title = post_data.get("title")
-            if title:
-                print(title)
+            title = post["data"]["title"]
+            print(title)
 
-    except Exception:
-        return
+    except (KeyError, ValueError, requests.exceptions.RequestException):
+        print("None")

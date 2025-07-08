@@ -1,40 +1,25 @@
 #!/usr/bin/python3
-"""
-Reddit API: Prints the titles of the first 10 hot posts of a subreddit.
-"""
+"""Fetches and prints the titles of the top 10 hot posts for a given subreddit."""
+
 import requests
 
 
 def top_ten(subreddit):
-    """
-    Prints the titles of the top 10 hot posts for a given subreddit.
-    Args:
-        subreddit (str): The subreddit name to query.
-    """
-    if not isinstance(subreddit, str):
-        print("None")
-        return
-
+    """Prints the titles of the first 10 hot posts of a subreddit."""
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {"User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"}
-    
+    headers = {"User-Agent": "HolbertonSchoolProject"}
+    params = {"limit": 10}
+
     try:
-        response = requests.get(url, headers=headers, allow_redirects=False)
-        
-        if response.status_code == 200:
-            data = response.json().get("data")
-            if data:
-                children = data.get("children", [])
-                for i, child in enumerate(children):
-                    if i >= 10:
-                        break
-                    title = child.get("data", {}).get("title")
-                    if title:
-                        print(title)
-            else:
-                print("None")
-        else:
+        res = requests.get(url, headers=headers,
+                           params=params, allow_redirects=False)
+        if res.status_code != 200:
             print("None")
-            
+            return
+
+        posts = res.json().get("data", {}).get("children", [])
+        for post in posts:
+            print(post.get("data", {}).get("title"))
+
     except Exception:
         print("None")

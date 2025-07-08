@@ -1,44 +1,40 @@
 #!/usr/bin/python3
 """
-Module to query Reddit API and print top 10 hot posts from a subreddit
+Reddit API: Prints the titles of the first 10 hot posts of a subreddit.
 """
-
 import requests
 
 
 def top_ten(subreddit):
     """
-    Queries the Reddit API and prints the titles of the first 10 hot posts
-    listed for a given subreddit.
-
+    Prints the titles of the top 10 hot posts for a given subreddit.
     Args:
-        subreddit (str): The name of the subreddit to query
-
-    Returns:
-        None: Prints titles or None if subreddit is invalid
+        subreddit (str): The subreddit name to query.
     """
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {
-        'User-Agent': 'python:reddit_api:v1.0 (by /u/yourusername)'
-    }
-    params = {
-        'limit': 10
-    }
+    if not isinstance(subreddit, str):
+        print("None")
+        return
 
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    headers = {"User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"}
+    
     try:
-        response = requests.get(url,
-                               headers=headers,
-                               params=params,
-                               allow_redirects=False)
+        response = requests.get(url, headers=headers, allow_redirects=False)
+        
         if response.status_code == 200:
-            data = response.json()
-            posts = data.get('data', {}).get('children', [])
-            if posts:
-                for post in posts:
-                    print(post.get('data', {}).get('title'))
+            data = response.json().get("data")
+            if data:
+                children = data.get("children", [])
+                for i, child in enumerate(children):
+                    if i >= 10:
+                        break
+                    title = child.get("data", {}).get("title")
+                    if title:
+                        print(title)
             else:
-                print(None)
+                print("None")
         else:
-            print(None)
-    except requests.exceptions.RequestException:
-        print(None)
+            print("None")
+            
+    except Exception:
+        print("None")

@@ -1,39 +1,42 @@
 #!/usr/bin/python3
 """
-Reddit API: Recursively retrieve all hot article titles for a given subreddit.
+Reddit API: Recursively retrieve all hot article titles
+for a given subreddit.
 
-This script defines a function `recurse` that connects to the Reddit API
-without authentication and collects all titles of hot posts from a specified
-subreddit. It uses recursion and handles pagination via the `after` parameter.
-
-If the subreddit is invalid or there are no results, the function returns None.
+This module defines the function `recurse` that connects
+to Reddit and collects all hot post titles using recursion.
+Returns None if subreddit is invalid or returns no posts.
 """
 
 import requests
 
 
-def recurse(subreddit, hot_list=[], after=None):
+def recurse(subreddit, hot_list=None, after=None):
     """
-    Recursively returns a list of titles of all hot articles for a subreddit.
-    
+    Recursively returns a list of titles of all hot articles
+    for a subreddit.
+
     Args:
-        subreddit (str): The name of the subreddit to query.
-        hot_list (list): The list used to store retrieved titles.
-        after (str): The pagination token for the next page (from Reddit API).
-    
+        subreddit (str): Name of subreddit to query.
+        hot_list (list): List collecting titles (internally used).
+        after (str): Pagination token from Reddit API.
+
     Returns:
-        list: List of post titles, or None if subreddit is invalid or empty.
+        list: Titles of all hot posts, or None if invalid/no posts.
     """
+    if hot_list is None:
+        hot_list = []
+
     if not isinstance(subreddit, str) or subreddit == "":
         return None
 
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    params = {"after": after}
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    headers = {"User-Agent": "HolbertonSchool"}
 
     try:
         response = requests.get(
-            url, headers=headers, params=params, allow_redirects=False
+            url, headers=headers, params={"after": after},
+            allow_redirects=False
         )
 
         if response.status_code != 200:
@@ -46,13 +49,14 @@ def recurse(subreddit, hot_list=[], after=None):
             return None
 
         for post in children:
-            hot_list.append(post.get("data", {}).get("title"))
+            title = post.get("data", {}).get("title")
+            hot_list.append(title)
 
         next_after = data.get("after")
         if next_after:
             return recurse(subreddit, hot_list, next_after)
-        else:
-            return hot_list
+
+        return hot_list
 
     except Exception:
         return None

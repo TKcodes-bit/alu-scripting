@@ -7,12 +7,14 @@ import requests
 def top_ten(subreddit):
     """Prints the titles of the top 10 hot posts of a given subreddit."""
     url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
-    headers = {"User-Agent": "MyRedditAPIClient/1.0"}  # Must be custom
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; ChatGPTBot/1.0; +https://openai.com/bot)"
+    }
 
     try:
         response = requests.get(url, headers=headers, allow_redirects=False)
         if response.status_code != 200:
-            return  # Do not print anything
+            return  # Do not print anything for invalid subreddit
 
         posts = response.json().get("data", {}).get("children", [])
         for post in posts:
